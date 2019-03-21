@@ -1,0 +1,77 @@
+version: '3.5'
+
+services:
+  traefik:
+    image: traefik
+    container_name: traefik
+    depends_on:
+      - dockersock-proxy
+    command: --api --acme.email=${ACME_EMAIL} --docker.domain=traefik.${DOMAIN_BASE}
+    networks:
+      - web
+      - default
+      - dockersock-traefik-proxy
+    ports:
+      - 80:80
+      - 443:443
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.enable=true"
+      - "traefik.backend=traefik"
+      - "traefik.frontend.rule=Host:traefik.${DOMAIN_BASE}"
+      - "traefik.port=8080"
+      - "com.centurylinklabs.watchtower.enable=true"
+    volumes:
+      - ${PERSISTENT_DIR}/traefik/traefik.toml:/traefik.toml
+      - ${PERSISTENT_DIR}/traefik/acme.json:/acme.json
+      - ${PERSISTENT_DIR}/traefik/traefik.htpasswd:/traefik.htpasswd
+      - ${PERSISTENT_DIR}/traefik/log:/var/log
+    restart: unless-stopped
+
+  dockersock-proxy:
+    image: tecnativa/docker-socket-proxy
+    container_name: dockersock-proxy
+    environment:
+      - CONTAINERS=1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - dockersock-traefik-proxy
+    ports:
+      - 2375
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: unless-stopped
+
+  watchtower:
+    image: v2tec/watchtower
+    container_name: watchtower
+    command: --interval 900 --label-enable --cleanup
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: unless-stopped
+
+  fail2ban:
+    image: crazymax/fail2ban:latest
+    container_name: fail2ban
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ${PERSISTENT_DIR}/traefik/log:/var/log:ro
+      - ${PERSISTENT_DIR}/fail2ban/data:/data
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: unless-stopped
+
+networks:
+  web:
+    external: true
+  dockersock-traefik-proxy:
+  default:
+    driver: bridge
+
+# vim: tabstop=2 shiftwidth=2 expandtab
