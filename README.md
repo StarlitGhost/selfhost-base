@@ -57,6 +57,7 @@ Traefik works via the web network and labels, which lets you be pretty flexible 
 
  - [Tiny Tiny RSS](https://github.com/StarlitGhost/selfhost-ttrss) - an RSS feed reader
  - [Jackett](https://github.com/StarlitGhost/selfhost-jackett) - a tracker search and indexing service
+ - [pb](https://github.com/StarlitGhost/selfhost-pb) - a pastebin and URL shortening service
  - *more to come*
 
 ## What's Next
