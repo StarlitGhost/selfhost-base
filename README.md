@@ -10,7 +10,8 @@ The base setup for my self-hosted docker services.
 Create a `.env` file in the root dir of the project,
 and fill out all the stuff you want to keep secret:
 
->PUID=
+```Shell
+PUID=
 PGID=
 TZ=
 PERSISTENT_DIR=
@@ -20,6 +21,7 @@ DOMAIN_SHORTENER=
 DOMAIN_CHAT_STATS=
 POSTGRES_USER=
 POSTGRES_PW=
+```
 
 `PUID` and `PGID` are found using `id $user`.
 `TZ` is your timezone
@@ -28,7 +30,7 @@ POSTGRES_PW=
 `DOMAIN_BASE` is the base domain you have pointed at the docker network.
 The rest are project specific - I symlink the same .env for all other subprojects.
 
-Create the file where letsencrypt certs will be stored:
+Create the file where auto-requested letsencrypt certs will be stored:
 
 `touch traefik/acme.json`
 
