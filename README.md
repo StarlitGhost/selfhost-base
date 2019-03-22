@@ -23,12 +23,12 @@ POSTGRES_USER=
 POSTGRES_PW=
 ```
 
-`PUID` and `PGID` are found using `id $user`.
-`TZ` is your timezone
-`PERSISTENT_DIR` is the base directory you want all your containers' persistent data to be kept in.
-`ACME_EMAIL` is an email address for letsencrypt cert stuff.
-`DOMAIN_BASE` is the base domain you have pointed at the docker network.
-The rest are project specific - I symlink the same .env for all other subprojects.
+`PUID` and `PGID` are found using `id $user`.  
+`TZ` is your timezone.  
+`PERSISTENT_DIR` is the base directory you want all your containers' persistent data to be kept in.  
+`ACME_EMAIL` is an email address for letsencrypt cert stuff.  
+`DOMAIN_BASE` is the base domain you have pointed at the docker network.  
+The rest are project specific; I symlink the same .env for all other subprojects.
 
 Create the file where auto-requested letsencrypt certs will be stored:
 
@@ -46,9 +46,19 @@ And we're done, time to spin everything up!
 
 `docker-compose up -d`
 
-## Other projects
+## Other Projects
 
-I organise these as subdirs to this repo checkout, but really they could be anywhere.
+I organise these as subdirs to this repo checkout, but really they could be anywhere.  
 Traefik works via the web network and labels, which lets you be pretty flexible with organisation.
 
 *list other repos here once they're up*
+
+## What's Next
+
+There's a few more things that would be nice to have as a base:
+
+ - [Authelia](https://github.com/clems4ever/authelia) looks good for two-factor auth
+   - [this issue](https://github.com/clems4ever/authelia/issues/88) should hopefully provide enough hints to get it working
+   - once this is done, the htpasswd auth on the traefik dashboard can probably be dropped
+ - [Portainer](https://github.com/portainer/portainer) for managing everything. I would want Authelia working first
+ - Cloudflare maybe?
