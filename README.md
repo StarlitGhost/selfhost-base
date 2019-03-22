@@ -46,12 +46,18 @@ And we're done, time to spin everything up!
 
 `docker-compose up -d`
 
-## Other Projects
+You should now be able to access the traefik dashboard at `traefik.${DOMAIN_BASE}`
 
-I organise these as subdirs to this repo checkout, but really they could be anywhere.  
+## Dependent Projects
+
+Of course, there's not much you can actually do with just this base setup,
+but now we can easily spin up the actual services we want to run.  
+I clone these as subdirs to this repo checkout, but really they could be anywhere.  
 Traefik works via the web network and labels, which lets you be pretty flexible with organisation.
 
-*list other repos here once they're up*
+ - [Tiny Tiny RSS](https://github.com/StarlitGhost/selfhost-ttrss) - an RSS feed reader
+ - [Jackett](https://github.com/StarlitGhost/selfhost-jackett) - a tracker search and indexing service
+ - *more to come*
 
 ## What's Next
 
