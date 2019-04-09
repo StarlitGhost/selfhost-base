@@ -44,7 +44,7 @@ services:
     restart: unless-stopped
 
   watchtower:
-    image: v2tec/watchtower
+    image: containrrr/watchtower
     container_name: watchtower
     command: --interval 900 --label-enable --cleanup
     volumes:
