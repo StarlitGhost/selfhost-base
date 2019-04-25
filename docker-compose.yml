@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   traefik:
-    image: traefik
+    image: traefik:latest
     container_name: traefik
     depends_on:
       - dockersock-proxy
@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
 
   dockersock-proxy:
-    image: tecnativa/docker-socket-proxy
+    image: tecnativa/docker-socket-proxy:latest
     container_name: dockersock-proxy
     environment:
       - CONTAINERS=1
@@ -44,7 +44,7 @@ services:
     restart: unless-stopped
 
   watchtower:
-    image: containrrr/watchtower
+    image: containrrr/watchtower:latest
     container_name: watchtower
     command: --interval 900 --label-enable --cleanup
     volumes:
