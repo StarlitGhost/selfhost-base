@@ -2,11 +2,11 @@ version: '3.5'
 
 services:
   traefik:
-    image: traefik:latest
+    image: traefik:1.7 # 2.0 has breaking changes
     container_name: traefik
     depends_on:
       - dockersock-proxy
-    command: --api --acme.email=${ACME_EMAIL} --docker.domain=traefik.${DOMAIN_BASE}
+    command: --api --ping --acme.email=${ACME_EMAIL} --docker.domain=traefik.${DOMAIN_BASE}
     networks:
       - web
       - default
@@ -19,6 +19,10 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=traefik"
       - "traefik.frontend.rule=Host:traefik.${DOMAIN_BASE}"
+      - "traefik.frontend.priority=100"
+      - "traefik.frontend.auth.forward.address=https://login.${DOMAIN_BASE}/api/verify?rd=https://login.${DOMAIN_BASE}/%23/"
+      - "traefik.frontend.headers.customRequestHeaders=X-ORIGINAL-URL:https://traefik.${DOMAIN_BASE}"
+      - "traefik.frontend.auth.forward.tls.insecureSkipVerify=true"
       - "traefik.port=8080"
       - "com.centurylinklabs.watchtower.enable=true"
     volumes:
@@ -64,6 +68,51 @@ services:
       - ${PERSISTENT_DIR}/traefik/log:/var/log:ro
       - ${PERSISTENT_DIR}/fail2ban/data:/data
     labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: unless-stopped
+
+  authelia:
+    image: clems4ever/authelia:master
+    container_name: authelia
+    networks:
+      - web
+    environment:
+      - NODE_TLS_REJECT_UNAUTHORIZED=1
+      - SESSION_SECRET=${AUTHELIA_SECRET}
+    volumes:
+      - ${PERSISTENT_DIR}/authelia/config.minimal.yml:/etc/authelia/config.yml:ro
+      - ${PERSISTENT_DIR}/authelia/users_database.yml:/etc/authelia/users_database.yml:rw
+      - ${PERSISTENT_DIR}/authelia/data:/etc/authelia/storage
+      - /tmp/authelia:/tmp/authelia
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.port=8080"
+      - "traefik.enable=true"
+      - "traefik.backend=authelia"
+      - "traefik.auth.frontend.rule=Host:login.${DOMAIN_BASE}"
+      - "com.centurylinklabs.watchtower.enable=true"
+    restart: unless-stopped
+
+  portainer:
+    image: portainer/portainer:latest
+    container_name: portainer
+    command: --no-auth
+    networks:
+      - web
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${PERSISTENT_DIR}/portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.enable=true"
+      - "traefik.backend=portainer"
+      - "traefik.frontend.rule=Host:portainer.${DOMAIN_BASE}"
+      - "traefik.frontend.auth.forward.address=https://login.${DOMAIN_BASE}/api/verify?rd=http://login.${DOMAIN_BASE}/%23/"
+      - "traefik.frontend.headers.customRequestHeaders=X-ORIGINAL-URL:https://portainer.${DOMAIN_BASE}"
+      - "traefik.frontend.auth.forward.tls.insecureSkipVerify=true"
+      - "traefik.port=9000"
       - "com.centurylinklabs.watchtower.enable=true"
     restart: unless-stopped
 

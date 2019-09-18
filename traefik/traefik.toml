@@ -1,4 +1,4 @@
-#debug = true
+debug = true
 logLevel = "ERROR"
 
 checkNewVersion = true
@@ -17,8 +17,6 @@ defaultEntryPoints = ["https","http"]
   [entryPoints.traefik]
     address = ":8080"
     compress = true
-    [entryPoints.traefik.auth.basic]
-      usersFile = "/traefik.htpasswd"
 
 [api]
   entryPoint = "traefik"
@@ -27,7 +25,7 @@ defaultEntryPoints = ["https","http"]
 [accessLog]
   filePath = "/var/log/access.log"
   [accessLog.filters]
-    statusCodes = ["400-499"]
+    statusCodes = ["400-499", "500-599"]
 [retry]
 
 [docker]
